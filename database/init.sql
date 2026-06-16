@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS user_roles (
 
 CREATE TABLE IF NOT EXISTS carbon_factors (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  category ENUM('transport','energy','food','shopping') NOT NULL,
+  category ENUM('transport','energy','food','shopping','offset') NOT NULL,
   sub_type VARCHAR(64) NOT NULL,
   factor_value DECIMAL(12,4) NOT NULL,
   unit VARCHAR(32) NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS activities (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   user_id BIGINT NOT NULL,
   factor_id BIGINT NULL,
-  category ENUM('transport','energy','food','shopping') NOT NULL,
+  category ENUM('transport','energy','food','shopping','offset') NOT NULL,
   sub_type VARCHAR(64) NOT NULL,
   amount DECIMAL(12,2) NOT NULL,
   unit VARCHAR(32) NOT NULL,
@@ -95,14 +95,23 @@ INSERT IGNORE INTO carbon_factors (id, category, sub_type, factor_value, unit, r
   (4, 'food', 'beef-meal', 6.2000, 'meal', 'Shanghai'),
   (5, 'shopping', 'parcel', 1.1000, 'item', 'Shanghai'),
   (6, 'energy', 'electricity', 0.5300, 'kWh', 'Hangzhou'),
-  (7, 'transport', 'bus', 0.0890, 'km', 'Beijing');
+  (7, 'transport', 'bus', 0.0890, 'km', 'Beijing'),
+  (8, 'offset', 'tree-planting', 22.0000, 'tree', 'Shanghai'),
+  (9, 'offset', 'carbon-credit', 1000.0000, 'ton', 'Shanghai'),
+  (10, 'offset', 'tree-planting', 20.0000, 'tree', 'Hangzhou'),
+  (11, 'offset', 'carbon-credit', 1000.0000, 'ton', 'Hangzhou'),
+  (12, 'offset', 'tree-planting', 18.0000, 'tree', 'Beijing'),
+  (13, 'offset', 'carbon-credit', 1000.0000, 'ton', 'Beijing');
 
 INSERT IGNORE INTO activities (id, user_id, factor_id, category, sub_type, amount, unit, carbon_value, record_date, note) VALUES
   (1, 1, 1, 'transport', 'metro', 22.50, 'km', 1.17, CURRENT_DATE(), 'Morning commute'),
   (2, 1, 3, 'energy', 'electricity', 18.00, 'kWh', 10.26, DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), 'Office lighting'),
   (3, 1, 4, 'food', 'beef-meal', 1.00, 'meal', 6.20, DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY), 'Client lunch'),
   (4, 2, 6, 'energy', 'electricity', 26.00, 'kWh', 13.78, DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), 'Store energy'),
-  (5, 3, 7, 'transport', 'bus', 18.00, 'km', 1.60, CURRENT_DATE(), 'Supplier visit');
+  (5, 3, 7, 'transport', 'bus', 18.00, 'km', 1.60, CURRENT_DATE(), 'Supplier visit'),
+  (6, 1, 8, 'offset', 'tree-planting', 3.00, 'tree', -66.00, DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY), 'Community tree planting event'),
+  (7, 2, 10, 'offset', 'tree-planting', 5.00, 'tree', -100.00, DATE_SUB(CURRENT_DATE(), INTERVAL 2 DAY), 'Annual reforestation campaign'),
+  (8, 3, 13, 'offset', 'carbon-credit', 0.01, 'ton', -10.00, DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), 'Purchased verified carbon credits');
 
 INSERT IGNORE INTO goals (id, user_id, title, target_value, period_type, start_date, end_date, status) VALUES
   (1, 1, 'Keep June emissions under 120 kg', 120.00, 'month', DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01'), LAST_DAY(CURRENT_DATE()), 'active'),

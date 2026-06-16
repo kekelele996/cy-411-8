@@ -66,5 +66,7 @@ export interface RankingItem {
   region: string;
   avatar?: string | null;
   totalCarbon: number;
+  totalEmission?: number;
+  totalOffset?: number;
 }
 

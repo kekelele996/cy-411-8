@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, Repository } from 'typeorm';
+import { ActivityCategory, OFFSET_CATEGORIES } from '../constants/activity';
 import { Activity } from '../models/activity';
 import { User } from '../models/user';
 import { logTemplate } from '../utils/logger';
@@ -23,8 +24,22 @@ export class RankingService {
             ...(start && end ? { recordDate: Between(start, end) } : {})
           }
         });
-        const total = rows.reduce((sum, row) => sum + Number(row.carbonValue), 0);
-        return { userId: Number(user.id), username: user.username, region: user.region, avatar: user.avatar, totalCarbon: Number(total.toFixed(2)) };
+        const totalEmission = rows
+          .filter((row) => !OFFSET_CATEGORIES.has(row.category as ActivityCategory))
+          .reduce((sum, row) => sum + Number(row.carbonValue), 0);
+        const totalOffset = rows
+          .filter((row) => OFFSET_CATEGORIES.has(row.category as ActivityCategory))
+          .reduce((sum, row) => sum + Math.abs(Number(row.carbonValue)), 0);
+        const netCarbon = totalEmission - totalOffset;
+        return {
+          userId: Number(user.id),
+          username: user.username,
+          region: user.region,
+          avatar: user.avatar,
+          totalCarbon: Number(netCarbon.toFixed(2)),
+          totalEmission: Number(totalEmission.toFixed(2)),
+          totalOffset: Number(totalOffset.toFixed(2))
+        };
       })
     );
     return result.sort((a, b) => a.totalCarbon - b.totalCarbon).map((item, index) => ({ ...item, rank: index + 1 }));

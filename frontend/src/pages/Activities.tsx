@@ -30,7 +30,7 @@ export function Activities() {
       <Space style={{ justifyContent: 'space-between', width: '100%' }}>
         <div>
           <Typography.Title level={2}>活动记录</Typography.Title>
-          <Typography.Text type="secondary">按分类筛选日常碳排活动。</Typography.Text>
+          <Typography.Text type="secondary">按分类筛选日常碳排活动和碳抵消行为。</Typography.Text>
         </div>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setOpen(true)}>新增活动</Button>
       </Space>
@@ -60,13 +60,13 @@ export function Activities() {
             <Select options={Object.values(ActivityCategory).map((value) => ({ value, label: ACTIVITY_CATEGORY_LABELS[value] }))} />
           </Form.Item>
           <Form.Item name="subType" label="子类型" rules={[{ required: true }]}>
-            <Input placeholder="metro / electricity / beef-meal / parcel" />
+            <Input placeholder="metro / electricity / beef-meal / parcel / tree-planting / carbon-credit" />
           </Form.Item>
           <Form.Item name="amount" label="数量" rules={[{ required: true }]}>
             <InputNumber min={0.01} style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item name="unit" label="单位" rules={[{ required: true }]}>
-            <Input />
+            <Input placeholder="km / kWh / meal / item / tree / ton" />
           </Form.Item>
           <Form.Item name="recordDate" label="日期" rules={[{ required: true }]}>
             <DatePicker style={{ width: '100%' }} />

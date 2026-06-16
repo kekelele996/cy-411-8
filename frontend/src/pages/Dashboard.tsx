@@ -29,12 +29,45 @@ export function Dashboard() {
     <Space direction="vertical" size={20} style={{ width: '100%' }}>
       <div>
         <Typography.Title level={2}>CarbonTrack 工作台</Typography.Title>
-        <Typography.Text type="secondary">今日、周期和目标进度集中在一个视图中。</Typography.Text>
+        <Typography.Text type="secondary">今日、周期净排放量和目标进度集中在一个视图中。</Typography.Text>
       </div>
       <Row gutter={[16, 16]}>
-        <Col xs={24} md={8}><Card><Statistic title="今日排放" value={formatCarbon(stats.todayTotal)} /></Card></Col>
-        <Col xs={24} md={8}><Card><Statistic title="本周排放" value={formatCarbon(stats.weekTotal)} /></Card></Col>
-        <Col xs={24} md={8}><Card><Statistic title="本月排放" value={formatCarbon(stats.monthTotal)} /></Card></Col>
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic
+              title="今日净排放"
+              value={formatCarbon(stats.todayTotal)}
+              valueStyle={{ color: stats.todayTotal < 0 ? '#52c41a' : '#cf1322' }}
+            />
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              排放 {formatCarbon(stats.todayEmission)} · 抵消 {formatCarbon(stats.todayOffset)}
+            </Typography.Text>
+          </Card>
+        </Col>
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic
+              title="本周净排放"
+              value={formatCarbon(stats.weekTotal)}
+              valueStyle={{ color: stats.weekTotal < 0 ? '#52c41a' : '#cf1322' }}
+            />
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              排放 {formatCarbon(stats.weekEmission)} · 抵消 {formatCarbon(stats.weekOffset)}
+            </Typography.Text>
+          </Card>
+        </Col>
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic
+              title="本月净排放"
+              value={formatCarbon(stats.monthTotal)}
+              valueStyle={{ color: stats.monthTotal < 0 ? '#52c41a' : '#cf1322' }}
+            />
+            <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+              排放 {formatCarbon(stats.monthEmission)} · 抵消 {formatCarbon(stats.monthOffset)}
+            </Typography.Text>
+          </Card>
+        </Col>
       </Row>
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={15}>

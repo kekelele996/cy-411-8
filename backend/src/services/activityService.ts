@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import dayjs from 'dayjs';
 import { Between, Repository } from 'typeorm';
-import { ActivityCategory } from '../constants/activity';
+import { ActivityCategory, OFFSET_CATEGORIES } from '../constants/activity';
 import { ErrorCodes } from '../constants/errorCodes';
 import { Messages } from '../constants/messages';
 import { Activity } from '../models/activity';
@@ -106,11 +106,25 @@ export class ActivityService {
   async summarize(userId: number, start: string, end: string) {
     const rows = await this.list(userId, undefined, start, end);
     const total = rows.reduce((sum, row) => sum + Number(row.carbonValue), 0);
+    const totalEmission = rows
+      .filter((row) => !OFFSET_CATEGORIES.has(row.category))
+      .reduce((sum, row) => sum + Number(row.carbonValue), 0);
+    const totalOffset = rows
+      .filter((row) => OFFSET_CATEGORIES.has(row.category))
+      .reduce((sum, row) => sum + Math.abs(Number(row.carbonValue)), 0);
+    const netEmission = totalEmission - totalOffset;
     const byCategory = Object.values(ActivityCategory).map((category) => ({
       category,
       value: rows.filter((row) => row.category === category).reduce((sum, row) => sum + Number(row.carbonValue), 0)
     }));
-    return { total: Number(total.toFixed(2)), byCategory, rows };
+    return {
+      total: Number(total.toFixed(2)),
+      totalEmission: Number(totalEmission.toFixed(2)),
+      totalOffset: Number(totalOffset.toFixed(2)),
+      netEmission: Number(netEmission.toFixed(2)),
+      byCategory,
+      rows
+    };
   }
 }
 
